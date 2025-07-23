@@ -1,0 +1,11 @@
+[[pages]]
+path="pages/Home.py"
+name="Home"
+
+[[pages]]
+path="pages/User_Profile.py"
+name="User Profile"
+
+[[pages]]
+path="login.py"
+name="Login"
