@@ -1,4 +1,4 @@
-from config import DB_PORT, DB_NAME, DB_HOST, DB_PASSWORD, DB_USER
+from src.config import DB_PORT, DB_NAME, DB_HOST, DB_PASSWORD, DB_USER
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
