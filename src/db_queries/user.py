@@ -1,13 +1,10 @@
 from db_config import connect_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from db_queries.user_metrics import new_metric
-from datetime import date, datetime
+from datetime import date
 
-date_format_only = "%Y-%m-%d"
-
-def new_user(username, password, dob, height, weight):
+def new_user(username, password, dob, height, weight, goal_weight):
     hashed_pwd = generate_password_hash(password)
-    bday = datetime.strptime(dob, date_format_only).date()
 
     cur, conn = connect_db()
 
@@ -16,9 +13,17 @@ def new_user(username, password, dob, height, weight):
                     INSERT INTO users
                     (name, password, dob) VALUES (%s, %s, %s)
                     RETURNING id
-                    ''', (username, hashed_pwd, bday))
+                    ''', (username, hashed_pwd, dob))
         uid = cur.fetchall()[0].get('id')
         conn.commit()
+
+        cur.execute('''
+                    INSERT INTO goals
+                    (uid, goal_weight) VALUES
+                    (%s, %s)
+                    ''', (uid, goal_weight))
+        conn.commit()
+
         cur.close()
         conn.close()
 
@@ -27,7 +32,7 @@ def new_user(username, password, dob, height, weight):
 
     new_metric(height, weight, uid)
 
-    return "Success! User created successfully"
+    return ("Success", id)
 
 def login(username, password):
     cur, conn = connect_db()
