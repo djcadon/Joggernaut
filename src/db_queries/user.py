@@ -1,6 +1,6 @@
-from src.db_config import connect_db
+from db_config import connect_db
 from werkzeug.security import generate_password_hash, check_password_hash
-from src.db_queries.user_metrics import new_metric
+from db_queries.user_metrics import new_metric
 from datetime import date, datetime
 
 date_format_only = "%Y-%m-%d"
@@ -32,21 +32,22 @@ def new_user(username, password, dob, height, weight):
 def login(username, password):
     cur, conn = connect_db()
     try:
-        cur.execute('SELECT password FROM users WHERE name = %s', (username,))
-        hashed_pwd = cur.fetchall()[0].get('password')
+        cur.execute('SELECT id, password FROM users WHERE name = %s', (username,))
+        rows = cur.fetchall()
+        hashed_pwd = rows[0].get('password')
+        id = rows[0].get('id')
 
         cur.close()
         conn.close()
 
         if check_password_hash(hashed_pwd, password) == True:
-            return "Success"
+            return ("Success", id)
 
         else:
-            return "Incorrect username or password"
+            return ("Incorrect username or password", 0)
 
     except Exception as e:
         return f"Error while logging in: {e}"
-
 
 def find_user_age(username):
     cur, conn = connect_db()

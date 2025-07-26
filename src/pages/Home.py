@@ -8,6 +8,8 @@ st.title('Joggernaut')
 
 st.text('Welcome to Joggernaut!')
 
+# st.write(st.session_state.user_details)
+
 # Example improt
 
 # cur, conn = connect_db()

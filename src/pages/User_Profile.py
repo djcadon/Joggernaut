@@ -51,16 +51,16 @@ if st.session_state.logged_in == True:
     <div class="profile-section">
         <h2>Personal Information</h2>
         <div class="profile-item">
-            <label>Name:</label> {user_name}
+            <label>Name:</label> {st.session_state.user_details['name']}
         </div>
         <div class="profile-item">
-            <label>Current Weight:</label> {current_weight}
+            <label>Current Weight:</label> {st.session_state.user_details['weight']} KG
         </div>
         <div class="profile-item">
-            <label>Current Height:</label> {current_height}
+            <label>Current Height:</label> {st.session_state.user_details['height']} CM
         </div>
         <div class="profile-item">
-            <label>Goal Weight:</label> {goal_weight}
+            <label>Goal Weight:</label> {'Uhh not yet'}
         </div>
     </div>
     """, unsafe_allow_html=True)

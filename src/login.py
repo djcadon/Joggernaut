@@ -1,4 +1,6 @@
 import streamlit as st
+from db_queries.user import login
+from db_queries.user_metrics import get_user_metrics
 from db_config import connect_db
 
 # This is just a placeholder for now, we'll make a real one
@@ -8,9 +10,24 @@ USER_CREDENTIALS = {
     "user2": "pass2"
 }
 
+if 'user_details' not in st.session_state:
+    st.session_state.user_details = {'id': 0, 'name': '', 'height':'', 'weight': '', 'age': 0}
+
 # Again, placeholder for testing
-def login(username, password):
-    return USER_CREDENTIALS.get(username) == password
+def user_login(username, password):
+    lg = login(username, password)
+    print(lg)
+    if lg[0] == 'Success':
+        st.session_state.user_details['id'] = lg[1]
+        st.session_state.user_details['name'] = username
+
+        user_info = get_user_metrics(lg[1])
+        st.session_state.user_details['height'] = user_info.get('height')
+        st.session_state.user_details['weight'] = user_info.get('weight')
+
+        return True
+    else:
+        return False
 
 # Streamlit stuff (This can stay, most of it)
 st.set_page_config(page_title='Login', layout='centered', initial_sidebar_state='collapsed')
@@ -48,7 +65,7 @@ with st.form("login_form"):
     submitted = st.form_submit_button("Login")
 
     if submitted:
-        if login(username, password):
+        if user_login(username, password):
             st.success(f"Welcome, {username}!")
             st.balloons()
             st.session_state['logged_in'] = True
