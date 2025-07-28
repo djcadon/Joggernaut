@@ -74,7 +74,7 @@ def get_workout(id):
         conn.close()
         return f"Error while finding workout: {e}"
 
-def get_exercise_by_user(uid):
+def get_workouts_by_user(uid):
     cur, conn = connect_db()
 
     try:
