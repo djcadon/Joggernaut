@@ -19,7 +19,6 @@ def new_exercise(uid, name, description):
     conn.close()
     return "Success"
 
-
 def edit_exercise(id, name, description):
     cur, conn = connect_db()
 
