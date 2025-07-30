@@ -3,7 +3,6 @@ from db_queries.friends import get_all_friends
 
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
 
-
 st.title('Joggernaut')
 
 st.text('Welcome to Joggernaut!')
