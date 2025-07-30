@@ -59,7 +59,7 @@ def get_all_friends(uid):
             cur.execute('''
                         SELECT name FROM users
                         WHERE id = %s
-                        ''', (id))
+                        ''', (id,))
 
             name = cur.fetchall()[0].get('name')
             metrics = get_user_metrics(id)

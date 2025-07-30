@@ -70,3 +70,44 @@ def find_user_age(username):
 
     except Exception as e:
         return f"Error retrieving age: {e}"
+
+def get_user(id):
+    cur, conn = connect_db()
+
+    try:
+        cur.execute('SELECT id, name, dob FROM users WHERE id = %s', (id, ))
+
+        rows = cur.fetchone()
+
+        cur.close()
+        conn.close()
+
+        return rows
+    except Exception as e:
+        return f"Error while retrieving user: {e}"
+
+def search_user(username):
+    cur, conn = connect_db()
+    query = '''
+    SELECT id, similarity(name, %s) AS sim
+    FROM users
+    WHERE similarity(name, %s) > 0.30
+    ORDER BY sim DESC;
+    '''
+
+    try:
+        cur.execute(query, (username, username))
+
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+        user_info = []
+        for row in rows:
+            user_info.append(get_user(row.get('id')))
+
+        return user_info
+
+    except Exception as e:
+        return f"Error while finding similar users: {e}"

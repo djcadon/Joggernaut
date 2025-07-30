@@ -13,5 +13,24 @@ st.markdown(f'''
             ''', unsafe_allow_html=True)
 
 friend_deets = get_all_friends(st.session_state.user_details.get('id'))
-for i in friend_deets:
-    st.write(i)
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.write('Name')
+
+with col2:
+    st.write('Weight')
+
+with col3:
+    st.write('Height')
+
+for friend in friend_deets:
+    with col1:
+        st.write(friend.get('name'))
+
+    with col2:
+        st.write(str(f"{friend.get('weight')} KG"))
+
+    with col3:
+        st.write(str(f"{friend.get('height')} CM"))
