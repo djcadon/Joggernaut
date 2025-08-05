@@ -58,9 +58,24 @@ if 'logged_in' in st.session_state:
         exercises = get_exercises_by_workout(wid)
 
         with st.expander(f"{workout.get('name')} -> {workout.get('days_of_week')}", expanded=False):
-            st.write("### Exercises")
-            for exercise in exercises:
-                st.write(f"- {exercise.get('name')}: {exercise.get('description')}")
+            col1, col2 = st.columns([8, .5])
+            
+            with col2:
+                # Delete Workout Button
+                
+                if st.button(f"🗑️", key=f"delete_{wid}"):
+                    result = delete_workout(wid)
+                    if result == "Success":
+                        st.success("Workout deleted successfully.")
+                        st.rerun()
+                    else:
+                            st.error(f"Error deleting workout: {result}")
+                
+            with col1:
+                st.write("### Exercises")
+                for exercise in exercises:
+                    st.write(f"- {exercise.get('name')}: {exercise.get('description')}")
+
 
             # Start/Stop Button Logic
             if wid not in st.session_state['workout_timer']:
@@ -84,7 +99,7 @@ if 'logged_in' in st.session_state:
                     start_time = st.session_state['workout_timer'][wid]["start_time"]
                     elapsed = time.time() - start_time
                     st.markdown(f"⏱️ **Elapsed Time:** {format_duration(elapsed)}")
-                    time.sleep(1)
+                    time.sleep(1) 
                      
 
             with col2:
@@ -124,7 +139,13 @@ if 'logged_in' in st.session_state:
                                 st.exception(e)
 
                         st.session_state['workout_timer'][wid] = {"started": False, "start_time": None}
-                        st.success(f"Workout Duration: {round(duration / 60, 2)} mins recorded for all exercises.")
+                        st.success(f"Workout Duration: {round(duration)} mins recorded for all exercises.")
+                        time.sleep(2) 
+                        st.rerun()
+                else:
+                    # Timer Tick rate
+                    time.sleep(1)
+                    st.rerun()
                         
 
 else:
