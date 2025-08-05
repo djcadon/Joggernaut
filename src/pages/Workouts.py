@@ -5,7 +5,7 @@ from datetime import timedelta
 from db_queries.workouts import get_workouts_by_user, new_workout, edit_workout, delete_workout
 from db_queries.exercises import get_exercise, get_exercise_by_user, get_all_exercises
 from db_queries.progress import new_progress_entry, edit_progress_entry, delete_progress_entry, get_progress_by_exercise
-from db_queries.exercises_workouts import  add_exercise_to_workout, remove_exercise_from_workout, update_exercise_in_workout
+from db_queries.exercises_workouts import  add_exercise_to_workout, remove_exercise_from_workout, update_exercise_in_workout, get_exercises_by_workout
 
 st.title('💪 My Workouts')
 
@@ -24,7 +24,7 @@ if 'logged_in' in st.session_state:
         st.session_state['adding_workout'] = True
 
     if st.session_state['adding_workout']:
-        all_exercises = get_all_exercises()  # List of dicts with exercise data
+        all_exercises = get_exercise_by_user(st.session_state.user_details['id'])  # List of dicts with exercise data
         exercise_names = [f"{e['name']} " for e in all_exercises]
         exercise_id_lookup = {f"{e['name']} ": e['id'] for e in all_exercises}
 
@@ -41,7 +41,7 @@ if 'logged_in' in st.session_state:
                 # Link each selected exercise to the workout
                 for selected in selected_exercises:
                     eid = exercise_id_lookup[selected]
-                    add_exercise_to_workout(eid=eid, wid=workout_id)
+                    print(add_exercise_to_workout(eid=eid, wid=workout_id))
 
                 st.success("Workout with exercises added.")
                 st.session_state['adding_workout'] = False
@@ -55,7 +55,7 @@ if 'logged_in' in st.session_state:
 
     for workout in workouts:
         wid = workout.get('id')
-        exercises = get_exercise_by_user(st.session_state.user_details['id'])
+        exercises = get_exercises_by_workout(wid)
 
         with st.expander(f"{workout.get('name')} -> {workout.get('days_of_week')}", expanded=False):
             st.write("### Exercises")

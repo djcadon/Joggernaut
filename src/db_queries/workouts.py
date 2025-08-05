@@ -13,8 +13,7 @@ def new_workout(uid, name, days_of_week):
         workout = cur.fetchone()
         conn.commit()
 
-        colnames = [desc[0] for desc in cur.description]
-        return dict(zip(colnames, workout))
+        return workout
 
     except Exception as e:
         return f"Error while creating workout: {e}"
@@ -82,7 +81,7 @@ def get_workouts_by_user(uid):
     cur, conn = connect_db()
 
     try:
-        cur.execute('SELECT *  FROM workouts WHERE uid = %s', (uid,))
+        cur.execute('SELECT * FROM workouts WHERE uid = %s', (uid,))
 
         rows = cur.fetchall()
 

@@ -8,16 +8,14 @@ def get_exercises_by_workout(wid):
         # Get exercise IDs linked to the workout
         cur.execute('SELECT eid FROM workout_exercises WHERE wid = %s', (wid,))
         rows = cur.fetchall()
-        eids = [row[0] for row in rows]  # Assuming fetchall returns list of tuples
+        eids = [row.get('eid') for row in rows]
         
         exercises = []
         for eid in eids:
             cur.execute('SELECT * FROM exercises WHERE id = %s', (eid,))
             exercise_row = cur.fetchone()
             if exercise_row:
-                # Convert to dict for consistency
-                colnames = [desc[0] for desc in cur.description]
-                exercises.append(dict(zip(colnames, exercise_row)))
+                exercises.append(exercise_row)
         
         return exercises
 
