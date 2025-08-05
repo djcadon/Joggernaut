@@ -3,22 +3,26 @@ from db_config import connect_db
 # Making CRUD for workouts
 def new_workout(uid, name, days_of_week):
     cur, conn = connect_db()
-
     try:
         cur.execute('''
-                    INSERT INTO workouts
-                    (uid, name, days_of_week)
-                    VALUES (%s, %s, %s)
-                    ''', (uid, name, days_of_week))
+            INSERT INTO workouts (uid, name, days_of_week)
+            VALUES (%s, %s, %s)
+            RETURNING id, uid, name, days_of_week
+        ''', (uid, name, days_of_week))
 
+        workout = cur.fetchone()
         conn.commit()
 
-    except Exception as e:
-        return f"Error while creating workouts: {e}"
+        colnames = [desc[0] for desc in cur.description]
+        return dict(zip(colnames, workout))
 
-    cur.close()
-    conn.close()
-    return "Success"
+    except Exception as e:
+        return f"Error while creating workout: {e}"
+
+    finally:
+        cur.close()
+        conn.close()
+
 
 
 def edit_workout(id, name, days_of_week):

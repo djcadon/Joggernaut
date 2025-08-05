@@ -2,15 +2,15 @@ from db_config import connect_db
 
 # CRUD for progress entries
 
-def new_progress_entry(uid, eid, wid, weight, reps, duration_mins):
+def new_progress_entry(uid, eid, wid, weight, duration_mins):
     cur, conn = connect_db()
 
     try:
         cur.execute('''
                     INSERT INTO progress
-                    (uid, eid, wid, weight, reps, duration_mins)
+                    (uid, eid, wid, weight, duration_mins)
                     VALUES (%s, %s, %s, %s, %s, %s)
-                    ''', (uid, eid, wid, weight, reps, duration_mins))
+                    ''', (uid, eid, wid, weight, duration_mins))
 
         conn.commit()
 
@@ -18,19 +18,20 @@ def new_progress_entry(uid, eid, wid, weight, reps, duration_mins):
         cur.close()
         conn.close()
         return "Success"
+    
 
     except Exception as e:
         return f"Error while recording new progress entry: {e}"
 
-def edit_progress_entry(id, eid, wid, weight, reps, duration_mins):
+def edit_progress_entry(id, eid, wid, weight, duration_mins):
     cur, conn = connect_db()
 
     try:
         cur.execute('''
                     UPDATE progress
-                    SET eid = %s, wid = %s, weight = %s, reps = %s, duration_mins = %s
+                    SET eid = %s, wid = %s, weight = %s, duration_mins = %s
                     WHERE id = %s
-                    ''', (eid, wid, weight, reps, duration_mins, id))
+                    ''', (eid, wid, weight,  duration_mins, id))
 
         conn.commit()
 

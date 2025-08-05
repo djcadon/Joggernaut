@@ -87,29 +87,19 @@ def get_exercise_by_user(uid):
     except Exception as e:
         return f"Error while finding exercises by user: {e}"
 
-def get_exercises_by_workout(wid):
+def get_all_exercises():
     cur, conn = connect_db()
 
     try:
-        cur.execute('''
-                    SELECT eid FROM workout_exercises
-                    WHERE wid = %s
-                    ''', (wid,))
+        cur.execute('SELECT * FROM exercises')
 
         rows = cur.fetchall()
 
-        eids = [i.get('eid') for i in rows]
-
-        exercises = []
-        for i in eids:
-            cur.execute('SELECT * FROM exercises WHERE id = %s', (i, ))
-
-            exercises.append(cur.fetchall()[0])
-
-
         cur.close()
         conn.close()
-        return exercises
+        return rows
 
     except Exception as e:
-        return f"Error while fetching exercises by workout: {e}"
+        cur.close()
+        conn.close()
+        return f"Error while fetching all exercises: {e}"

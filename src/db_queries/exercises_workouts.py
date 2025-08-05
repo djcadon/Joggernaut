@@ -4,24 +4,30 @@ from db_config import connect_db
 
 def get_exercises_by_workout(wid):
     cur, conn = connect_db()
-
     try:
-        cur.execute('''
-                    SELECT e.* FROM exercises e
-                    JOIN workout_exercises we ON e.id = we.eid
-                    WHERE we.wid = %s
-                    ''', (wid,))
-
+        # Get exercise IDs linked to the workout
+        cur.execute('SELECT eid FROM workout_exercises WHERE wid = %s', (wid,))
         rows = cur.fetchall()
-
-        cur.close()
-        conn.close()
-        return rows
+        eids = [row[0] for row in rows]  # Assuming fetchall returns list of tuples
+        
+        exercises = []
+        for eid in eids:
+            cur.execute('SELECT * FROM exercises WHERE id = %s', (eid,))
+            exercise_row = cur.fetchone()
+            if exercise_row:
+                # Convert to dict for consistency
+                colnames = [desc[0] for desc in cur.description]
+                exercises.append(dict(zip(colnames, exercise_row)))
+        
+        return exercises
 
     except Exception as e:
+        return f"Error while fetching exercises by workout: {e}"
+
+    finally:
         cur.close()
         conn.close()
-        return f"Error while finding exercises by workout: {e}"
+
     
 def add_exercise_to_workout(wid, eid):
     cur, conn = connect_db()
