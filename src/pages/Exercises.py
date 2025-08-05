@@ -95,5 +95,6 @@ if st.session_state.get('logged_in'):
                         result = delete_exercise(ex_id)
                         st.success(f"Deleted: {result}")
                         st.rerun()
+                        
 else:
     st.markdown('### Please log in first.')
