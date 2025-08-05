@@ -9,7 +9,7 @@ def new_progress_entry(uid, eid, wid, weight, duration_mins):
         cur.execute('''
                     INSERT INTO progress
                     (uid, eid, wid, weight, duration_mins)
-                    VALUES (%s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                     ''', (uid, eid, wid, weight, duration_mins))
 
         conn.commit()
