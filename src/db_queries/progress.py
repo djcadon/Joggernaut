@@ -65,8 +65,9 @@ def get_progress_by_exercise(uid, eid):
 
     try:
         cur.execute('''
-                    SELECT * FROM progress
-                    WHERE uid = %s AND eid = %s
+                SELECT e.name as ex_name, w.name as w_name, p.weight, p.duration_mins
+                FROM exercises e, workouts w, progress p
+                WHERE e.id = p.eid AND w.id = p.wid AND p.uid = %s AND e.id = %s
                     ''', (uid, eid))
 
         progress = cur.fetchall()
@@ -78,3 +79,26 @@ def get_progress_by_exercise(uid, eid):
 
     except Exception as e:
         return f"Error when retrieving progress: {e}"
+
+
+def get_all_progress_records(uid):
+    cur, conn = connect_db()
+
+    query = '''
+    SELECT e.name as ex_name, w.name as w_name, p.weight, p.duration_mins
+    FROM exercises e, workouts w, progress p
+    WHERE e.id = p.eid AND w.id = p.wid AND p.uid = %s
+    '''
+
+    try:
+        cur.execute(query, (uid,))
+
+        rows = cur.fetchall()
+
+        cur.close()
+        conn.close()
+
+    except Exception as e:
+        return f"Error while fetching progress records: {e}"
+
+    return rows
