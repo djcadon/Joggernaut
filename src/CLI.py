@@ -131,46 +131,60 @@ def handle_operations(selected_table):
     for key, value in enumerate(operations[table_name].keys(), start=1):
         print(f"{key}. {value}")
     print("\nEnter which operation you want to perform or 'exit' to quit:")
+
     while True:
         user_input = input().strip().lower()
         match user_input:
-            #Return to main menu
             case "0":
                 print("You selected the main menu. Returning to table selection.")
                 return handle_tables()
-            #Select operation
+
             case "1":
                 print(f"You selected SELECT operation on {table_name} table.\n")
                 print("Available SELECT options:")
                 for option in operations[table_name]["SELECT"]:
                     print(f"{option}")
+                print("Pretending to fetch and show data...")
+                print(f"(Sample row from {table_name} table)")
                 break
-            #Insert operation
+
             case "2":
                 print(f"You selected INSERT operation on {table_name} table.\n")
                 print("INSERT SCHEMA:")
-                for option in operations[table_name]["INSERT"]:
-                    print(f"{option}")
+                fake_data = {}
+                for field in operations[table_name]["INSERT"]:
+                    value = input(f"Enter {field}: ")
+                    fake_data[field] = value
+                print(f"Mock insert into {table_name} with data: {fake_data}")
                 break
-            #Update operation
+
             case "3":
                 print(f"You selected UPDATE operation on {table_name} table.\n")
                 print("Available UPDATE options:")
                 for option in operations[table_name]["UPDATE"]:
                     print(f"{option}")
+                update_id = input("Enter the ID to update: ")
+                updates = {}
+                for field in operations[table_name]["INSERT"]:  # reuse insert schema for updates
+                    new_value = input(f"Enter new value for {field}: ")
+                    updates[field] = new_value
+                print(f"Mock update {table_name} where ID = {update_id} with: {updates}")
                 break
-            #Delete operation
+
             case "4":
                 print(f"You selected DELETE operation on {table_name} table.\n")
                 print("Available DELETE options:")
                 for option in operations[table_name]["DELETE"]:
                     print(f"{option}")
+                delete_id = input("Enter the ID to delete: ")
+                print(f"Mock delete from {table_name} where ID = {delete_id}")
                 break
-            #Exit the CLI
+
             case 'exit':
                 print("Exiting the CLI. Goodbye!")
                 exit(0)
-            #Invalid input
+
             case _:
                 print("Invalid input. Please try again.")
+
 handle_operations(selected_table)
