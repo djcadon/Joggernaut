@@ -65,7 +65,7 @@ def get_progress_by_exercise(uid, eid):
 
     try:
         cur.execute('''
-                SELECT e.name as ex_name, w.name as w_name, p.weight, p.duration_mins
+                SELECT e.name as ex_name, w.name as w_name, p.weight, p.duration_mins, p.created_at
                 FROM exercises e, workouts w, progress p
                 WHERE e.id = p.eid AND w.id = p.wid AND p.uid = %s AND e.id = %s
                     ''', (uid, eid))
