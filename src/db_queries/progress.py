@@ -1,4 +1,8 @@
 from db_config import connect_db
+import datetime
+
+today = datetime.date.today()
+start_of_week = today - datetime.timedelta(days=today.weekday())
 
 # CRUD for progress entries
 
@@ -100,5 +104,22 @@ def get_all_progress_records(uid):
 
     except Exception as e:
         return f"Error while fetching progress records: {e}"
+
+    return rows
+
+def get_progress_for_week(uid):
+    cur, conn = connect_db()
+
+    try:
+        cur.execute('''
+                    SELECT COUNT(*)
+                    FROM progress
+                    WHERE created_at >= %s AND uid = %s
+                    ''', (start_of_week, uid))
+
+        rows = cur.fetchall()
+
+    except Exception as e:
+        return f"Error while fetching this week's progress: {e}"
 
     return rows

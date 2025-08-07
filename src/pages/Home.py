@@ -1,19 +1,29 @@
 import streamlit as st
 from db_queries.friends import get_all_friends
+from db_queries.progress import get_progress_for_week
 
 st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
 
 st.title('Joggernaut')
 
 if 'logged_in' in st.session_state:
-    st.text('Welcome to Joggernaut!')
+    st.write('Welcome to Joggernaut!')
+
+    friend_deets = get_all_friends(st.session_state.user_details.get('id'))
+
+    week_progress = (get_progress_for_week(st.session_state.user_details['id']))
+    count = week_progress[0].get('count')
+    info_str = f'This week, you performed {count} {'exercise' if count == 1 else 'exercises'}!'
+
+    if count > 4:
+        info_str += " Good job! You're doing great :)"
+
+    st.info(info_str)
+
 
     st.markdown(f'''
                 ##### See what your friends are up to!
                 ''', unsafe_allow_html=True)
-
-    friend_deets = get_all_friends(st.session_state.user_details.get('id'))
-
     col1, col2, col3 = st.columns(3)
 
     with col1:
