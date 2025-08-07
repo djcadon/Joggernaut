@@ -1,15 +1,14 @@
 import streamlit as st
 from db_queries.user import new_user
 from db_queries.user_metrics import get_user_metrics
+from db_queries.goals import user_goals
 import datetime
 
 if 'user_details' not in st.session_state:
     st.session_state.user_details = {'id': 0, 'name': '', 'height':'', 'weight': '', 'age': 0}
 
-# Again, placeholder for testing
-def user_signup(username, password, dob, height, weight):
-    lg = new_user(username, password, dob, height, weight)
-    print(lg)
+def user_signup(username, password, dob, height, weight, goal_weight):
+    lg = new_user(username, password, dob, height, weight, goal_weight)
     if lg[0] == 'Success':
         st.session_state.user_details['id'] = lg[1]
         st.session_state.user_details['name'] = username
@@ -17,6 +16,7 @@ def user_signup(username, password, dob, height, weight):
         user_info = get_user_metrics(lg[1])
         st.session_state.user_details['height'] = user_info.get('height')
         st.session_state.user_details['weight'] = user_info.get('weight')
+        st.session_state.user_details['goal_weight'] = goal_weight
 
         return True
     else:
@@ -49,6 +49,7 @@ hide_st_style = """
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
+existing_account = st.button('Already Have an Account')
 with st.form("login_form"):
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -58,13 +59,13 @@ with st.form("login_form"):
     goal_weight = st.text_input("Goal Weight (kg)")
     submitted = st.form_submit_button("Sign Up")
 
-
-
+    if existing_account:
+        st.switch_page('./login.py')
     if submitted:
         sub_height = float(height)
         sub_weight = float(weight)
         sub_goal_weight = float(goal_weight)
-        if new_user(username, password, dob, height, weight, goal_weight):
+        if user_signup(username, password, dob, sub_height, sub_weight, sub_goal_weight):
             st.success(f"Welcome, {username}!")
             st.balloons()
             st.session_state['logged_in'] = True

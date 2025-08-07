@@ -1,6 +1,7 @@
 import streamlit as st
 from db_queries.user import login
 from db_queries.user_metrics import get_user_metrics
+from db_queries.goals import user_goals
 
 if 'user_details' not in st.session_state:
     st.session_state.user_details = {'id': 0, 'name': '', 'height':'', 'weight': '', 'age': 0}
@@ -8,14 +9,15 @@ if 'user_details' not in st.session_state:
 # Again, placeholder for testing
 def user_login(username, password):
     lg = login(username, password)
-    print(lg)
     if lg[0] == 'Success':
         st.session_state.user_details['id'] = lg[1]
         st.session_state.user_details['name'] = username
 
         user_info = get_user_metrics(lg[1])
+        goal_weight = user_goals(lg[1])
         st.session_state.user_details['height'] = user_info.get('height')
         st.session_state.user_details['weight'] = user_info.get('weight')
+        st.session_state.user_details['goal_weight'] = goal_weight
 
         return True
     else:

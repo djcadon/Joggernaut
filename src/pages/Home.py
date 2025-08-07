@@ -5,31 +5,34 @@ st.set_page_config(layout='wide', initial_sidebar_state='collapsed')
 
 st.title('Joggernaut')
 
-st.text('Welcome to Joggernaut!')
+if 'logged_in' in st.session_state:
+    st.text('Welcome to Joggernaut!')
 
-st.markdown(f'''
-            ##### See what your friends are up to!
-            ''', unsafe_allow_html=True)
+    st.markdown(f'''
+                ##### See what your friends are up to!
+                ''', unsafe_allow_html=True)
 
-friend_deets = get_all_friends(st.session_state.user_details.get('id'))
+    friend_deets = get_all_friends(st.session_state.user_details.get('id'))
 
-col1, col2, col3 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
 
-with col1:
-    st.write('Name')
-
-with col2:
-    st.write('Weight')
-
-with col3:
-    st.write('Height')
-
-for friend in friend_deets:
     with col1:
-        st.write(friend.get('name'))
+        st.write('Name')
 
     with col2:
-        st.write(str(f"{friend.get('weight')} KG"))
+        st.write('Weight')
 
     with col3:
-        st.write(str(f"{friend.get('height')} CM"))
+        st.write('Height')
+
+    for friend in friend_deets:
+        with col1:
+            st.write(friend.get('name'))
+
+        with col2:
+            st.write(str(f"{friend.get('weight')} KG"))
+
+        with col3:
+            st.write(str(f"{friend.get('height')} CM"))
+else:
+    st.write('### Please login to continue')

@@ -3,13 +3,7 @@ import streamlit as st
 st.set_page_config(layout='centered')
 st.title('User Profile')
 
-# We will later convert this to a db query and session state thing
-user_name = 'Joe'
-current_weight = '80 KG'
-current_height = '170cm'
-goal_weight = '75 KG'
-
-if st.session_state.logged_in == True:
+if 'logged_in' in st.session_state:
     # Define CSS style
     st.markdown("""
         <style>
@@ -60,7 +54,7 @@ if st.session_state.logged_in == True:
             <label>Current Height:</label> {st.session_state.user_details['height']} CM
         </div>
         <div class="profile-item">
-            <label>Goal Weight:</label> {'Uhh not yet'}
+            <label>Goal Weight:</label> {st.session_state.user_details['goal_weight']} KG
         </div>
     </div>
     """, unsafe_allow_html=True)

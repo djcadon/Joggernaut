@@ -32,7 +32,7 @@ def new_user(username, password, dob, height, weight, goal_weight):
 
     new_metric(height, weight, uid)
 
-    return ("Success", id)
+    return ("Success", uid)
 
 def login(username, password):
     cur, conn = connect_db()
