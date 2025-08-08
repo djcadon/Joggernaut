@@ -140,46 +140,27 @@ def handle_operations(selected_table):
                 return handle_tables()
 
             case "1":
-                print(f"You selected SELECT operation on {table_name} table.\n")
-                print("Available SELECT options:")
-                for option in operations[table_name]["SELECT"]:
-                    print(f"{option}")
-                print("Pretending to fetch and show data...")
-                print(f"(Sample row from {table_name} table)")
-                break
+                        print("Choose a SELECT option:")
+                        print("1. SELECT *")
+                        print("2. SELECT BY ID")
+                        select_choice = input("Enter choice (1 or 2): ").strip()
+                        
+                        if select_choice == "1":
+                            select_all_users()
+                        elif select_choice == "2":
+                            select_user_by_id()
+                        else:
+                            print("Invalid option.")
+
 
             case "2":
-                print(f"You selected INSERT operation on {table_name} table.\n")
-                print("INSERT SCHEMA:")
-                fake_data = {}
-                for field in operations[table_name]["INSERT"]:
-                    value = input(f"Enter {field}: ")
-                    fake_data[field] = value
-                print(f"Mock insert into {table_name} with data: {fake_data}")
-                break
+                insert_user()
 
             case "3":
-                print(f"You selected UPDATE operation on {table_name} table.\n")
-                print("Available UPDATE options:")
-                for option in operations[table_name]["UPDATE"]:
-                    print(f"{option}")
-                update_id = input("Enter the ID to update: ")
-                updates = {}
-                for field in operations[table_name]["INSERT"]:  # reuse insert schema for updates
-                    new_value = input(f"Enter new value for {field}: ")
-                    updates[field] = new_value
-                print(f"Mock update {table_name} where ID = {update_id} with: {updates}")
-                break
-
+               update_user_by_id()
             case "4":
-                print(f"You selected DELETE operation on {table_name} table.\n")
-                print("Available DELETE options:")
-                for option in operations[table_name]["DELETE"]:
-                    print(f"{option}")
-                delete_id = input("Enter the ID to delete: ")
-                print(f"Mock delete from {table_name} where ID = {delete_id}")
-                break
-
+              delete_user_by_id()
+                
             case 'exit':
                 print("Exiting the CLI. Goodbye!")
                 exit(0)
@@ -188,3 +169,35 @@ def handle_operations(selected_table):
                 print("Invalid input. Please try again.")
 
 handle_operations(selected_table)
+
+# Mock operation functions
+def select_all_users():
+    print("SELECT * FROM Users")
+    print("(1, 'Alex', 'secret123', '2000-01-01')")
+    print("(2, 'Jamie', 'pass456', '1999-12-31')")
+
+def select_user_by_id():
+    user_id = input("Enter user ID to view: ")
+    print(f"SELECT * FROM Users WHERE UserID = {user_id}")
+    print(f"(Mocked) User ID {user_id}: ('Alex', 'secret123', '2000-01-01')")
+
+def insert_user():
+    name = input("Enter Name: ")
+    password = input("Enter Password: ")
+    dob = input("Enter Date of Birth (YYYY-MM-DD): ")
+    print(f"INSERT INTO Users (Name, Password, DateOfBirth) VALUES ('{name}', '{password}', '{dob}')")
+    print("User inserted successfully (mock).")
+
+def update_user_by_id():
+    user_id = input("Enter ID of the user to update: ")
+    name = input("Enter new Name: ")
+    password = input("Enter new Password: ")
+    dob = input("Enter new Date of Birth (YYYY-MM-DD): ")
+    print(f"UPDATE Users SET Name = '{name}', Password = '{password}', DateOfBirth = '{dob}' WHERE UserID = {user_id}")
+    print("User updated successfully (mock).")
+
+def delete_user_by_id():
+    user_id = input("Enter ID of the user to delete: ")
+    print(f"DELETE FROM Users WHERE UserID = {user_id}")
+    print("User deleted successfully (mock).")
+
