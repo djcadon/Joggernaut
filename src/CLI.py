@@ -220,7 +220,7 @@ def handle_post_operation(selected_table, operation):
             case "13":
                 print(f"You selected SELECT BY USERID operation on {table_name} table.\n")
                 user_id = input("Enter the UserID you want to select: ")
-                select_by_id(table_name, user_id)
+                select_by_userid(table_name, user_id)
                 break
             #INSERT operation
             case "21":
@@ -258,7 +258,9 @@ def select_all(table):
         rows = cur.fetchall()
         print(f"Data from {table}:")
         for row in rows:
-            print(row)
+            for key, value in row.items():
+                print(f"{key}: {value}")
+            print()
     except Exception as e:
         print("Error selecting all records:", e)
     finally:
@@ -272,7 +274,10 @@ def select_by_id(table, record_id):
     try:
         cur.execute(query, (record_id,))
         row = cur.fetchone()
-        print(f"Record from {table} where id = {record_id}: {row}")
+        print(f"Record from {table} where id = {record_id}:")
+        for key, value in row.items():
+            print(f"{key}: {value}")
+        print()
     except Exception as e:
         print("Error selecting record by ID:", e)
     finally:
@@ -287,7 +292,9 @@ def select_by_userid(table, user_id):
         rows = cur.fetchall()
         print(f"Records from {table} where uid = {user_id}:")
         for row in rows:
-            print(row)
+            for key, value in row.items():
+                print(f"{key}: {value}")
+            print()
     except Exception as e:
         print("Error selecting records by UserID:", e)
     finally:
