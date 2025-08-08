@@ -30,6 +30,7 @@ for key, value in enumerate(tables.items(), start=1):
 print("\nEnter which table you want to interact with or 'exit' to quit:")
 #Function to handle user input for table selection
 def handle_tables():
+    #Loop to handle user input for table selection
     while True:
         user_input = input().strip().lower()
         match user_input:
@@ -131,14 +132,15 @@ def handle_operations(selected_table):
     for key, value in enumerate(operations[table_name].keys(), start=1):
         print(f"{key}. {value}")
     print("\nEnter which operation you want to perform or 'exit' to quit:")
-
+    #Loop to handle user input for operations
     while True:
         user_input = input().strip().lower()
         match user_input:
+            #Main menu option
             case "0":
                 print("You selected the main menu. Returning to table selection.")
                 return handle_tables()
-
+            #SELECT operation
             case "1":
                 print(f"You selected SELECT operation on {table_name} table.\n")
                 print("Available SELECT options:")
@@ -147,7 +149,7 @@ def handle_operations(selected_table):
                 print("Pretending to fetch and show data...")
                 print(f"(Sample row from {table_name} table)")
                 break
-
+            #INSERT operation
             case "2":
                 print(f"You selected INSERT operation on {table_name} table.\n")
                 print("INSERT SCHEMA:")
@@ -157,7 +159,7 @@ def handle_operations(selected_table):
                     fake_data[field] = value
                 print(f"Mock insert into {table_name} with data: {fake_data}")
                 break
-
+            #UPDATE operation
             case "3":
                 print(f"You selected UPDATE operation on {table_name} table.\n")
                 print("Available UPDATE options:")
@@ -170,7 +172,7 @@ def handle_operations(selected_table):
                     updates[field] = new_value
                 print(f"Mock update {table_name} where ID = {update_id} with: {updates}")
                 break
-
+            #DELETE operation
             case "4":
                 print(f"You selected DELETE operation on {table_name} table.\n")
                 print("Available DELETE options:")
@@ -179,12 +181,82 @@ def handle_operations(selected_table):
                 delete_id = input("Enter the ID to delete: ")
                 print(f"Mock delete from {table_name} where ID = {delete_id}")
                 break
-
+            #Exit the CLI
             case 'exit':
                 print("Exiting the CLI. Goodbye!")
                 exit(0)
-
+            #Invalid input
             case _:
                 print("Invalid input. Please try again.")
-
 handle_operations(selected_table)
+#INSERT operation for  table
+def dynamic_insert(table, data):
+    """Insert a row into any table."""
+    cur, conn = connect_db()
+    
+    columns = ", ".join(data.keys())
+    placeholders = ", ".join(["%s"] * len(data))
+    query = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+    
+    cur.execute(query, tuple(data.values()))
+    conn.commit()
+    
+    print(f"Inserted into {table}: {data}")
+    cur.close()
+    conn.close()
+#SELECT * operation for  table
+def dynamic_select_all(table):
+    """Select all rows from any table."""
+    cur, conn = connect_db()
+    
+    query = f"SELECT * FROM {table}"
+    cur.execute(query)
+    rows = cur.fetchall()
+    
+    print(f"Data from {table}:")
+    for row in rows:
+        print(row)
+    
+    cur.close()
+    conn.close()
+#SELECT WHERE ID == operation for  table
+def dynamic_select_by_id(table, id_column, record_id):
+    """Select a row by ID."""
+    cur, conn = connect_db()
+    
+    query = f"SELECT * FROM {table} WHERE {id_column} = %s"
+    cur.execute(query, (record_id,))
+    row = cur.fetchone()
+    
+    print(f"Record from {table} where {id_column}={record_id}: {row}")
+    
+    cur.close()
+    conn.close()
+#UPDATE operation for  table
+def dynamic_update(table, id_column, record_id, updates):
+    """Update any table's row by ID."""
+    cur, conn = connect_db()
+    
+    set_clause = ", ".join([f"{col} = %s" for col in updates.keys()])
+    query = f"UPDATE {table} SET {set_clause} WHERE {id_column} = %s"
+    
+    cur.execute(query, tuple(updates.values()) + (record_id,))
+    conn.commit()
+    
+    print(f"Updated {table} where {id_column}={record_id}: {updates}")
+    
+    cur.close()
+    conn.close()
+#DELETE operation for  table
+def dynamic_delete(table, id_column, record_id):
+    """Delete any table's row by ID."""
+    cur, conn = connect_db()
+    
+    query = f"DELETE FROM {table} WHERE {id_column} = %s"
+    cur.execute(query, (record_id,))
+    conn.commit()
+    
+    print(f"Deleted record from {table} where {id_column}={record_id}")
+    
+    cur.close()
+    conn.close()
