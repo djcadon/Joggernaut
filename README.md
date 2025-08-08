@@ -39,3 +39,26 @@ Joggernaut is a fitness tracking application that helps you keep track of your f
 6. The Find Friends page is for you to find your friend using their username and add them as a friend!
 7. The User Profile page shows you all your critical information
 8. The Progress page is for you to keep track of your progress on all exercises, and based on workouts too.
+
+### Command Line Interface
+1. Run the CLI.py file.                    
+2. You will be prompted to select from the following tables:    - 1:"Users"
+    - 2:"User_Metrics"
+    - 3:"Friends"
+    - 4:"Workouts"
+    - 5:"Exercises"
+    - 6:"Workout_Exercises"
+    - 7:"Progress"
+    - 8:"Goals"
+3. You will then be prompted to enter a command for the operation you want to perform:
+    - SELECT
+    - INSERT
+    - UPDATE
+    - DELETE
+4. You will then be asked more specific commands to enter. Example if you selected the exercises table and the "SELECT" command:
+    - "1:SELECT *"
+    - "2:SELECT BY ID"
+    - "3:SELECT BY USERID"
+5. You may be asked further questions if the command requires it.
+6. You will be shown the result of the query.
+7. Finally, you will be asked if you'd like to run another query.
