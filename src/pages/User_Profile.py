@@ -1,10 +1,15 @@
 import streamlit as st
 
+# Set page layout to center content
 st.set_page_config(layout='centered')
+
+# Page title
 st.title('User Profile')
 
+# Check if user is logged in
 if 'logged_in' in st.session_state:
-    # Define CSS style
+
+    # Add custom CSS to style the profile section
     st.markdown("""
         <style>
         .profile-section {
@@ -40,7 +45,7 @@ if 'logged_in' in st.session_state:
         </style>
         """, unsafe_allow_html=True)
 
-    # Display profile information using HTML
+    # Show user profile details using HTML inside a styled div
     st.markdown(f"""
     <div class="profile-section">
         <h2>Personal Information</h2>
@@ -58,5 +63,7 @@ if 'logged_in' in st.session_state:
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+# If user not logged in, show login prompt
 else:
     st.markdown('### Please login to continue')
