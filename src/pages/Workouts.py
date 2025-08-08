@@ -12,31 +12,33 @@ from db_queries.exercises_workouts import (
 
 st.title('💪 My Workouts')
 
-# Ensure user is logged in
+# Make sure user is logged in
 if 'logged_in' not in st.session_state:
     st.write('### Please log in to continue')
     st.stop()
 
-# Session State Initialization
+# Initialize state for adding workout and workout timers
 if 'adding_workout' not in st.session_state:
     st.session_state['adding_workout'] = False
 
 if 'workout_timer' not in st.session_state:
     st.session_state['workout_timer'] = {}
 
-# Workout Timer Display Helper
+# Helper to convert seconds to HH:MM:SS
 def format_duration(seconds):
     return str(timedelta(seconds=int(seconds)))
 
-# Create Workout UI
+# Add workout form
 if st.button("➕ Add Workout"):
     st.session_state['adding_workout'] = True
 
 if st.session_state['adding_workout']:
+    # Get all exercises for this user
     all_exercises = get_exercise_by_user(st.session_state.user_details['id'])
     exercise_names = [e['name'] for e in all_exercises]
     exercise_id_lookup = {e['name']: e['id'] for e in all_exercises}
 
+    # New workout form
     with st.form("new_workout_form", clear_on_submit=True):
         name = st.text_input("Workout Name")
         day = st.selectbox("Day of the Week", ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
@@ -44,6 +46,7 @@ if st.session_state['adding_workout']:
         submitted = st.form_submit_button("Create Workout")
 
         if submitted:
+            # Save workout and link exercises
             workout = new_workout(st.session_state.user_details['id'], name, day)
             workout_id = workout['id']
 
@@ -55,25 +58,24 @@ if st.session_state['adding_workout']:
             st.session_state['adding_workout'] = False
             st.rerun()
 
-# Load Workouts
+# Load all workouts for user
 workouts = get_workouts_by_user(st.session_state.user_details['id'])
 
-# Display Each Workout
+# Display each workout
 for workout in workouts:
     wid = workout['id']
     workout_name = workout['name']
     workout_day = workout['days_of_week']
     exercises = get_exercises_by_workout(wid)
 
-    # Timer session state for each workout
+    # Setup timer for this workout
     if wid not in st.session_state['workout_timer']:
         st.session_state['workout_timer'][wid] = {"started": False, "start_time": None}
 
     with st.expander(f"{workout_name} → {workout_day}", expanded=False):
 
-        # Workout action buttons
+        # Delete workout button
         delete_col, main_col = st.columns([1, 8])
-
         with delete_col:
             if st.button("🗑️", key=f"delete_{wid}"):
                 result = delete_workout(wid)
@@ -83,16 +85,17 @@ for workout in workouts:
                 else:
                     st.error(f"Failed to delete workout: {result}")
 
+        # Show exercises inside workout
         with main_col:
             st.write("### Exercises")
             for exercise in exercises:
                 eid = exercise['id']
                 ename = exercise['name']
 
-                # Unique key for weight input
+                # Unique key for storing weight input
                 weight_key = f"weight_input_{wid}_{eid}"
 
-                # Default weight value if not set
+                # Set default weight if not already in session state
                 if weight_key not in st.session_state:
                     st.session_state[weight_key] = 0.0
 
@@ -104,17 +107,17 @@ for workout in workouts:
                     key=weight_key
                 )
 
+            # Show timer status
             timer = st.session_state['workout_timer'][wid]
             now = time.time()
 
-            # Display Timer Info
             if timer["started"]:
                 elapsed = now - timer["start_time"]
                 st.success(f"⏱️ Workout Started! Elapsed: {format_duration(elapsed)}")
             else:
                 st.info("Workout not started yet.")
 
-            # Start/Stop Buttons
+            # Timer buttons: Start & Stop
             start_col, stop_col = st.columns(2)
 
             with start_col:
@@ -134,6 +137,7 @@ for workout in workouts:
                         duration_mins = round(duration_secs / 60, 2)
 
                         uid = st.session_state.user_details['id']
+                        # Save progress for each exercise
                         for exercise in exercises:
                             eid = exercise['id']
                             ename = exercise['name']
