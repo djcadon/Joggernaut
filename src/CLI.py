@@ -1,6 +1,7 @@
 from db_config import connect_db
 #Standard library imports
 import sys
+from werkzeug.security import generate_password_hash, check_password_hash
 #Global variables
 selected_table = None
 user_operation = None
@@ -73,7 +74,7 @@ db_tables = {
                 "Friends":{"friends":["fid", "uid"]},
                 "Workouts":{"workouts":["uid", "name", "days_of_week"]},
                 "Exercises":{"exercises":["uid", "name", "description"]},
-                "Workout_Exercises":{"exercise_workout":["wid", "eid"]},
+                "Workout_Exercises":{"workout_exercises":["wid", "eid"]},
                 "Progress":{"progress":["uid", "eid", "wid", "weight", "duration_mins"]},
                 "Goals":{"goals":["uid", "goal_weight"]}
             }
@@ -252,45 +253,60 @@ def handle_post_operation(selected_table, operation):
 def select_all(table):
     cur, conn = connect_db()
     query = f"SELECT * FROM {table}"
-    cur.execute(query)
-    rows = cur.fetchall()
-    print(f"Data from {table}:")
-    for row in rows:
-        print(row)
-    cur.close()
-    conn.close()
+    try:
+        cur.execute(query)
+        rows = cur.fetchall()
+        print(f"Data from {table}:")
+        for row in rows:
+            print(row)
+    except Exception as e:
+        print("Error selecting all records:", e)
+    finally:
+        cur.close()
+        conn.close()
 #Function to select a record by ID from a table
 def select_by_id(table, record_id):
     """Select a row by ID."""
     cur, conn = connect_db()
     query = f"SELECT * FROM {table} WHERE id = %s"
-    cur.execute(query, (record_id,))
-    row = cur.fetchone()
-    print(f"Record from {table} where id = {record_id}: {row}")
-    cur.close()
-    conn.close()
+    try:
+        cur.execute(query, (record_id,))
+        row = cur.fetchone()
+        print(f"Record from {table} where id = {record_id}: {row}")
+    except Exception as e:
+        print("Error selecting record by ID:", e)
+    finally:
+        cur.close()
+        conn.close()
 #Function to select records by UserID from a table
 def select_by_userid(table, user_id):
     cur, conn = connect_db()
     query = f"SELECT * FROM {table} WHERE uid = %s"
-    cur.execute(query, (user_id,))
-    rows = cur.fetchall()
-    print(f"Records from {table} where uid = {user_id}:")
-    for row in rows:
-        print(row)
-    cur.close()
-    conn.close()
-# Function to insert a new record into a table dynamically
+    try:
+        cur.execute(query, (user_id,))
+        rows = cur.fetchall()
+        print(f"Records from {table} where uid = {user_id}:")
+        for row in rows:
+            print(row)
+    except Exception as e:
+        print("Error selecting records by UserID:", e)
+    finally:
+        cur.close()
+        conn.close()
+#Function to insert a new record into a table dynamically
 def insert_record(selected_table):
     cur, conn = connect_db()
-    # Get friendly name and DB mapping
+    #Get friendly name and DB mapping
     friendly_name = tables[selected_table]
     db_table_name, columns = list(db_tables[friendly_name].items())[0]
     values = []
     for col in columns:
         value = input(f"Enter value for {col}: ")
+        #Hash password before saving
+        if col == "password":
+            value = generate_password_hash(col)
         values.append(value)
-    # Dynamically create placeholders
+    #Dynamically create placeholders
     placeholders = ", ".join(["%s"] * len(columns))
     col_names = ", ".join(columns)
     query = f"INSERT INTO {db_table_name} ({col_names}) VALUES ({placeholders})"
@@ -303,7 +319,7 @@ def insert_record(selected_table):
     finally:
         cur.close()
         conn.close()
-# Function to update a record dynamically
+#Function to update a record dynamically
 def update_record(selected_table, record_id):
     cur, conn = connect_db()
     friendly_name = tables[selected_table]
@@ -335,11 +351,15 @@ def update_record(selected_table, record_id):
 def delete_by_id(table, record_id):
     cur, conn = connect_db()
     query = f"DELETE FROM {table} WHERE id = %s"
-    cur.execute(query, (record_id,))
-    conn.commit()
-    print(f"Record with id {record_id} deleted from {table}.")
-    cur.close()
-    conn.close()
+    try:
+        cur.execute(query, (record_id,))
+        conn.commit()
+        print(f"Record with id {record_id} deleted from {table}.")
+    except Exception as e:
+        print("Error deleting record by ID:", e)
+    finally:
+        cur.close()
+        conn.close()
 #Main function to start the CLI
 def main():
     while True:
@@ -364,13 +384,13 @@ def main():
             continue
         print("\nOperation completed. Would you like to do another\n")
         another = None
-        while another != "y" or another != "n":
+        while another != "y" and another != "n":
             another = input("Enter 'y' to continue or 'n' to exit: ").strip().lower()
-            if another == 'no':
+            if another == 'n':
                 print("Exiting the CLI. Goodbye!")
                 exit(0)
             if another != "y" and another != "n":
                 print("Invalid input. Please enter 'y' or 'n'.")
-# Entry point for the script
+#Entry point for the script
 if __name__ == "__main__":
     sys.exit(int(main() or 0))
